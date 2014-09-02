@@ -190,6 +190,58 @@ var metawear = {
 
         metawear.writeData(data.buffer);
     },
+    recordAccelerometer : function(){
+        //start the accelerometer
+        var data = new Uint8Array(7);
+        data[0] = 0x03; // module accelerometer
+        data[1] = 0x03; // 
+        data[2] = 0x00; // 
+        data[3] = 0x00;
+        data[4] = 0x20; //
+        data[5] = 0x00;
+        data[6] = 0x00;
+
+        metawear.writeData(data.buffer);
+        
+        //track x
+        var datax = new Uint8Array(3);
+        datax[0] = 0x03; // module accelerometer
+        datax[1] = 0x02; // 
+        datax[2] = 0x01; // start
+        metawear.writeData(datax.buffer);
+        //track y
+        var datay = new Uint8Array(3);
+        datay[0] = 0x03; // module accelerometer
+        datay[1] = 0x04; // 
+        datay[2] = 0x01; // start
+        metawear.writeData(datay.buffer);
+        //track z
+        var dataz = new Uint8Array(3);
+        dataz[0] = 0x03; // module accelerometer
+        dataz[1] = 0x01; // 
+        dataz[2] = 0x01; // start
+        metawear.writeData(dataz.buffer);
+    },
+    stopAccelerometer : function(){
+        //stop track x
+        var datax = new Uint8Array(3);
+        datax[0] = 0x03; // module accelerometer
+        datax[1] = 0x02; // 
+        datax[2] = 0x00; // stop
+        metawear.writeData(datax.buffer);
+        //stop track y
+        var datay = new Uint8Array(3);
+        datay[0] = 0x03; // module accelerometer
+        datay[1] = 0x04; // 
+        datay[2] = 0x00; // stop
+        metawear.writeData(datay.buffer);
+        //track z
+        var dataz = new Uint8Array(3);
+        dataz[0] = 0x03; // module accelerometer
+        dataz[1] = 0x01; // 
+        dataz[2] = 0x00; // stop
+        metawear.writeData(dataz.buffer);
+    },
     disconnect: function(onSuccess, onError, event) {
         ble.disconnect(metawear.deviceId, onSuccess, onError);
         metawear.deviceId = "";
