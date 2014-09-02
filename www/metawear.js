@@ -66,7 +66,7 @@ var metawear = {
     onDataReceived : function(buffer) { // data received from MetaWear
         console.log('data received plugin handler');
         var data = new Uint8Array(buffer);
-        console.log('the data is: ' + JSON.stringify(data));
+        //console.log('the data is: ' + JSON.stringify(data));
         var message = "";
 
         if (data[0] === 1 && data[1] === 1) { // module = 1, opscode = 1
@@ -75,9 +75,48 @@ var metawear = {
             } else {
                 message = "Button released";
             }
+            alert("Metawear: " + message);
+        } else if (data[0] === 3 && data[1] === 4) { // module = 1, opscode = 1
+            //console.log('accelerometer data is: ' + JSON.stringify(data));
+            //TODO guessing as the xyz values
+            var d2 = data[2]; //x
+            var d3 = data[3];
+            var d4 = data[4]; //y
+            var d5 = data[5];
+            var d6 = data[6]; //z
+            var d7 = data[7];
+            message = "Got accelerometer information: [2]" 
+                + d2 + ",[3]" + d3
+            + ",[4]" + d4
+            + ",[5]" + d5
+            + ",[6]" + d6
+            + ",[7]" + d7;
+            //console.log("ACCELEROMETER MESSAGE: " + message);
+            
+            //compare against old values
+            var xdiff = Math.abs(metawear.accelerometerVALS.x - d2);
+            if (xdiff > 30 && metawear.accelerometerVALS.x !== 22){
+                console.log("x value changes more than 30 degrees: " + xdiff);
+                console.log("ACCELEROMETER MESSAGE: " + message);
+                metawear.neopixel(metawear.COLOR.RED);   
+            }
+            
+            var ydiff = Math.abs(metawear.accelerometerVALS.y - d4);
+            if (ydiff > 30 && metawear.accelerometerVALS.x !== 22){
+                console.log("y value changes more than 30 degrees: " + ydiff);
+                console.log("ACCELEROMETER MESSAGE: " + message);
+                metawear.neopixel(metawear.COLOR.GREEN);   
+            }
+            
+            //reset accelerometer values
+            metawear.accelerometerVALS.x = d2;
+            metawear.accelerometerVALS.y = d4;
+            metawear.accelerometerVALS.z = d6;
+            
+            //all the rest of the values are the same
         }
 
-        alert("MESSAGE FROM ONDATA: " + message);
+        //console.log("MESSAGE FROM ONDATA: " + message);
     },
     onDataReceivedError: function(res) {
         alert('Bluetooth Data Error: ' + JSON.stringify(res));
@@ -190,7 +229,13 @@ var metawear = {
 
         metawear.writeData(data.buffer);
     },
-    recordAccelerometer : function(){
+    accelerometerVALS : {
+       x : 22,
+       y : 22,
+       z : 22
+    },
+    startAccelerometer : function(){
+        console.log("startAccelerometer called");
         //start the accelerometer
         var data = new Uint8Array(7);
         data[0] = 0x03; // module accelerometer
@@ -223,6 +268,7 @@ var metawear = {
         metawear.writeData(dataz.buffer);
     },
     stopAccelerometer : function(){
+        console.log("stopAccelerometer called");
         //stop track x
         var datax = new Uint8Array(3);
         datax[0] = 0x03; // module accelerometer
@@ -235,7 +281,7 @@ var metawear = {
         datay[1] = 0x04; // 
         datay[2] = 0x00; // stop
         metawear.writeData(datay.buffer);
-        //track z
+        //stop track z
         var dataz = new Uint8Array(3);
         dataz[0] = 0x03; // module accelerometer
         dataz[1] = 0x01; // 

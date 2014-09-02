@@ -9,7 +9,8 @@
             <clobbers target="metawear" />
         </js-module>
         
-        <dependency id="com.megster.cordova.ble" url="https://github.com/don/cordova-plugin-ble-central/plugin"/>
+  <!--      <dependency id="com.megster.cordova.ble" url="https://github.com/don/cordova-plugin-ble-central"/>-->
+        <dependency id="com.megster.cordova.ble" />
         
         <platform name="android">
 	    </platform>
