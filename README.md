@@ -50,6 +50,9 @@ When playing a color on the metawear there are three choices for colors, red, gr
 - [metawear.motor](#motor)
 - [metawear.buzzer](#buzzer)
 
+- [metawear.startAccelerometer](#startAccelerometer)
+- [metawear.stopAccelerometer](#stopAccelerometer)
+
 - [metawear.disconnect](#disconnect)
 
 
@@ -165,6 +168,71 @@ Function 'buzzer' tells the optional metawear buzzer to pulse.
 ### Parameters
 
 - __pulseLength__: value indicates how long you'd like the motor to pulse.
+
+## startAccelerometer
+
+Tells the metawear to start sharing information about the accelerometer
+
+    metawear.startAccelerometer(); 
+    
+### Description
+
+Function 'startAccelerometer' tells the metawear to start sharing information about the accelerometer.  We can use the information returned to see how the values have changed.  
+
+### Quick Example of Processing the Accelerometer Information
+
+    onDataReceived : function(buffer) { // data received from MetaWear
+        console.log('data received plugin handler');
+        var data = new Uint8Array(buffer);
+        if (data[0] === 3 && data[1] === 4) { // module = 3, opscode = 4
+            //console.log('accelerometer data is: ' + JSON.stringify(data));
+            //FYI guessing as the xyz values
+            var d2 = data[2]; //x
+            var d3 = data[3];
+            var d4 = data[4]; //y
+            var d5 = data[5];
+            var d6 = data[6]; //z
+            var d7 = data[7];
+            message = "Got accelerometer information: [2]" 
+                + d2 + ",[3]" + d3
+            + ",[4]" + d4
+            + ",[5]" + d5
+            + ",[6]" + d6
+            + ",[7]" + d7;
+            //console.log("ACCELEROMETER MESSAGE: " + message);
+            
+            //compare against old values
+            var xdiff = Math.abs(metawear.accelerometerVALS.x - d2);
+            if (xdiff > 30 && metawear.accelerometerVALS.x !== 22){
+                console.log("x value changes more than 30 degrees: " + xdiff);
+                console.log("ACCELEROMETER MESSAGE: " + message);
+                metawear.neopixel(metawear.COLOR.RED);   
+            }
+            
+            var ydiff = Math.abs(metawear.accelerometerVALS.y - d4);
+            if (ydiff > 30 && metawear.accelerometerVALS.x !== 22){
+                console.log("y value changes more than 30 degrees: " + ydiff);
+                console.log("ACCELEROMETER MESSAGE: " + message);
+                metawear.neopixel(metawear.COLOR.GREEN);   
+            }
+            
+            //reset accelerometer values
+            metawear.accelerometerVALS.x = d2;
+            metawear.accelerometerVALS.y = d4;
+            metawear.accelerometerVALS.z = d6;
+            
+            //all the rest of the values are the same
+        }
+
+## stopAccelerometer
+
+Tells the metawear to stop sharing information about the accelerometer
+
+    metawear.stopAccelerometer(); 
+    
+### Description
+
+Function 'startAccelerometer' tells the metawear to start sharing information about the accelerometer.  We can use the information returned to see how the values have changed.
 
 ## disconnect
 
