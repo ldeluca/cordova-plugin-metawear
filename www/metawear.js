@@ -50,7 +50,7 @@ var metawear = {
     writeData: function(buffer, success, failure) { // to to be sent to MetaWear
         if (!success) {
             success = function() {
-                console.log( "Sent: " + JSON.stringify(new Uint8Array(buffer)) );
+                //console.log( "Sent: " + JSON.stringify(new Uint8Array(buffer)) );
             };
         }
 
@@ -63,8 +63,8 @@ var metawear = {
         console.log(arguments);        
         ble.notify(metawear.deviceId, metawear.serviceUUID, metawear.rxCharacteristic, metawear.onDataReceived, metawear.onDataReceivedError);
     },
+    accLOCK : false,
     onDataReceived : function(buffer) { // data received from MetaWear
-        console.log('data received plugin handler');
         var data = new Uint8Array(buffer);
         //console.log('the data is: ' + JSON.stringify(data));
         var message = "";
@@ -79,12 +79,14 @@ var metawear = {
         } else if (data[0] === 3 && data[1] === 4) { // module = 1, opscode = 1
             //console.log('accelerometer data is: ' + JSON.stringify(data));
             //TODO guessing as the xyz values
-            var d2 = data[2]; //x
+            var d2 = data[2]; //
             var d3 = data[3];
-            var d4 = data[4]; //y
-            var d5 = data[5];
-            var d6 = data[6]; //z
-            var d7 = data[7];
+            var d4 = data[4]; //
+            var d5 = data[5]; // x values
+            var d6 = data[6]; // y values
+            var d7 = data[7]; // z values
+            //all the rest of the values are the same
+            
             message = "Got accelerometer information: [2]" 
                 + d2 + ",[3]" + d3
             + ",[4]" + d4
@@ -94,26 +96,44 @@ var metawear = {
             //console.log("ACCELEROMETER MESSAGE: " + message);
             
             //compare against old values
-            var xdiff = Math.abs(metawear.accelerometerVALS.x - d2);
-            if (xdiff > 30 && metawear.accelerometerVALS.x !== 22){
+            /*var xdiff = Math.abs(metawear.accelerometerVALS.x - d5);
+            if (xdiff > 100 && metawear.accelerometerVALS.x !== 22 && metawear.accLOCK === false){
+                metawear.accLOCK = true;
                 console.log("x value changes more than 30 degrees: " + xdiff);
                 console.log("ACCELEROMETER MESSAGE: " + message);
-                metawear.neopixel(metawear.COLOR.RED);   
-            }
+                metawear.neopixel(metawear.COLOR.RED); 
+                metawear.play(true);
+                
+                //after 5 seconds, turn off
+                setTimeout(function () {
+                    metawear.stop(true);
+                    metawear.accLOCK = false;
+                }, 3000);
+            }*/
             
-            var ydiff = Math.abs(metawear.accelerometerVALS.y - d4);
-            if (ydiff > 30 && metawear.accelerometerVALS.x !== 22){
-                console.log("y value changes more than 30 degrees: " + ydiff);
+            var ydiff = Math.abs(metawear.accelerometerVALS.y - d6);
+            if (ydiff > 100 && metawear.accelerometerVALS.x !== 22 && metawear.accLOCK === false){
+                metawear.accLOCK = true;
+                console.log("y value changes more than 30 degrees: " + ydiff + " old val: " + metawear.accelerometerVALS.y + " new: " + d6);
                 console.log("ACCELEROMETER MESSAGE: " + message);
+                
                 metawear.neopixel(metawear.COLOR.GREEN);   
+                metawear.play(true);
+                
+                
+                
+                //after 5 seconds, turn off
+                setTimeout(function () {
+                    metawear.stop(true);
+                    metawear.accLOCK = false;
+                }, 3000);
             }
             
             //reset accelerometer values
-            metawear.accelerometerVALS.x = d2;
-            metawear.accelerometerVALS.y = d4;
-            metawear.accelerometerVALS.z = d6;
+            metawear.accelerometerVALS.x = d5;
+            metawear.accelerometerVALS.y = d6;
+            metawear.accelerometerVALS.z = d7;
             
-            //all the rest of the values are the same
         }
 
         //console.log("MESSAGE FROM ONDATA: " + message);
@@ -149,7 +169,6 @@ var metawear = {
         "BLUE" : 0x02
     },
     neopixel: function(color){
-        console.log("LED called with color: " + color);
         var data = new Uint8Array(17);        
         data[0] = 0x02; // Color Register
         data[1] = 0x03; // 
@@ -157,23 +176,22 @@ var metawear = {
         data[3] = 0x02; // 
         data[4] = 0x1F; // high intensity  1F for solid
         data[5] = 0x64; // low intensity 64 for solid
-        data[6] = 0xF4; // 
+        data[6] = 0x01; // 
         data[7] = 0x01; // 
-        data[8] = 0xF4; // 
+        data[8] = 0x01; // 
         data[9] = 0x01; // high intensity
-        data[10] = 0xF4; // low intensity
+        data[10] = 0x01; // low intensity
         data[11] = 0x01; // Rise Time
-        data[12] = 0xD0; // High Time
-        data[13] = 0x07; // Fall time
+        data[12] = 0x01; // High Time
+        data[13] = 0x01; // Fall time
         data[14] = 0x00; // Pulse Duration 
         data[15] = 0x00; // Pulse Offset 
-        data[16] = 0x01; //repeat count
+        data[16] = 0x00; //repeat count
 
         metawear.writeData(data.buffer);
     },
     play : function(autoplay) {
-        console.log("play LED called with autoplay: " + autoplay);
-       var data = new Uint8Array(3);        
+        var data = new Uint8Array(3);        
         data[0] = 0x02; // 
         data[1] = 0x01; // 
         
@@ -187,7 +205,6 @@ var metawear = {
          metawear.writeData(data.buffer);    
     },
     pause : function() {
-        console.log("pause LED called");
        var data = new Uint8Array(3);        
         data[0] = 0x02; // 
         data[1] = 0x01; // 
@@ -196,8 +213,7 @@ var metawear = {
          metawear.writeData(data.buffer);    
     },
     stop : function(clearPattern) {
-        console.log("stop LED called with clearPattern: " + clearPattern);
-       var data = new Uint8Array(3);        
+        var data = new Uint8Array(3);        
         data[0] = 0x02; // 
         data[1] = 0x02; // 
         // if 0 then just stop. if 1 then cancel the pattern
@@ -289,6 +305,8 @@ var metawear = {
         metawear.writeData(dataz.buffer);
     },
     disconnect: function(onSuccess, onError, event) {
+        //make sure that the accelerometer is stopped
+        metawear.stopAccelerometer();
         ble.disconnect(metawear.deviceId, onSuccess, onError);
         metawear.deviceId = "";
     }
