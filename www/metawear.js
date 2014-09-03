@@ -75,7 +75,7 @@ var metawear = {
             } else {
                 message = "Button released";
             }
-            alert("Metawear: " + message);
+            console.log("Metawear: " + message);
         } else if (data[0] === 3 && data[1] === 4) { // module = 1, opscode = 1
             //console.log('accelerometer data is: ' + JSON.stringify(data));
             //TODO guessing as the xyz values
@@ -101,14 +101,14 @@ var metawear = {
                 metawear.accLOCK = true;
                 console.log("x value changes more than 30 degrees: " + xdiff);
                 console.log("ACCELEROMETER MESSAGE: " + message);
-                metawear.neopixel(metawear.COLOR.RED); 
+                metawear.setLED(metawear.COLOR.RED); 
                 metawear.play(true);
                 
                 //after 5 seconds, turn off
                 setTimeout(function () {
                     metawear.stop(true);
                     metawear.accLOCK = false;
-                }, 3000);
+                }, 1000);
             }*/
             
             var ydiff = Math.abs(metawear.accelerometerVALS.y - d6);
@@ -117,7 +117,7 @@ var metawear = {
                 console.log("y value changes more than 30 degrees: " + ydiff + " old val: " + metawear.accelerometerVALS.y + " new: " + d6);
                 console.log("ACCELEROMETER MESSAGE: " + message);
                 
-                metawear.neopixel(metawear.COLOR.GREEN);   
+                metawear.setLED(metawear.COLOR.GREEN);   
                 metawear.play(true);
                 
                 
@@ -126,7 +126,7 @@ var metawear = {
                 setTimeout(function () {
                     metawear.stop(true);
                     metawear.accLOCK = false;
-                }, 3000);
+                }, 1000);
             }
             
             //reset accelerometer values
@@ -139,8 +139,7 @@ var metawear = {
         //console.log("MESSAGE FROM ONDATA: " + message);
     },
     onDataReceivedError: function(res) {
-        alert('Bluetooth Data Error: ' + JSON.stringify(res));
-        console.log(JSON.stringify(res));
+        console.log('Bluetooth Data Error: ' + JSON.stringify(res));
     },
     listenForButton : function(failureCallback, onDataReceived, onDataReceivedError){
         if (typeof onDataReceived == 'function'){
@@ -168,7 +167,7 @@ var metawear = {
         "GREEN" : 0x00,
         "BLUE" : 0x02
     },
-    neopixel: function(color){
+    setLED: function(color){
         var data = new Uint8Array(17);        
         data[0] = 0x02; // Color Register
         data[1] = 0x03; // 

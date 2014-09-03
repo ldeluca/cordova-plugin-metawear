@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
     <plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
-            id="com.lisaseacat.metawear" version="0.0.1">
+            id="com.lisaseacat.metawear" version="0.0.2">
         <name>Metawear Cordova Plugin</name>
         <description>An Apache Cordova plugin to interact with a metaware board on your hybrid app</description>
         <license></license>
-        <keywords>cordova,lisa seacat, lisa seacat deluca, metaware, bluetooth, ble, LED, neopixel, sensors</keywords>
+        <keywords>cordova,lisa seacat, lisa seacat deluca, metaware, bluetooth, ble, LED, neopixel, sensors, accelerometer, temperature, mbient</keywords>
         <js-module src="www/metawear.js" name="metawear">
             <clobbers target="metawear" />
         </js-module>
