@@ -39,20 +39,15 @@ When playing a color on the metawear there are three choices for colors, red, gr
 ## Methods
 
 - [metawear.init](#init)
-
 - [metawear.listenForButton](#listenForButton)
-
 - [metawear.setLED](#setLED)
 - [metawear.play](#play)
 - [metawear.pause](#pause)
 - [metawear.stop](#stop)
-
 - [metawear.motor](#motor)
 - [metawear.buzzer](#buzzer)
-
 - [metawear.startAccelerometer](#startAccelerometer)
 - [metawear.stopAccelerometer](#stopAccelerometer)
-
 - [metawear.disconnect](#disconnect)
 
 
